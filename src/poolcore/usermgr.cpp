@@ -86,11 +86,11 @@ bool UserManager::sendMail(const std::string &login, const std::string &emailAdd
   EMailText.append("Subject: " + emailTitlePrefix + " " + BaseCfg.PoolName + "\r\n");
   EMailText.append("\r\n");
 
-  EMailText.append("<html><body>");
+  //EMailText.append("<html><body>");
   EMailText.append("<p>This email was generated automatically, please don't reply.</p>");
   EMailText.append("<p>" + mainText + "</p>");
   EMailText.append("<p>Visit <a href=\"" + activationLink + "\">" + activationLink + "</a></p>");
-  EMailText.append("</body></html>");
+  //EMailText.append("</body></html>");
 
   int result = ioSmtpSendMail(client,
                               SMTP.ServerAddress,
