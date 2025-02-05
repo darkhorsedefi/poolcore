@@ -56,6 +56,22 @@ bool UserManager::sendMail(const std::string &login, const std::string &emailAdd
     error = "smtp_client_create_error";
     return false;
   }
+  /*
+  std::string EMailText;
+  std::string activationLink = BaseCfg.PoolHostProtocol + "://";
+  activationLink.append(BaseCfg.PoolHostAddress);
+  activationLink.append(linkPrefix);
+  activationLink.append(actionId.ToString());
+
+  EMailText.append("Content-Type: text/html; charset=\"ISO-8859-1\";\r\n");
+  EMailText.append("This email generated automatically, please don't reply.\r\n");
+  EMailText.append(mainText);
+  EMailText.append(" visit <a href=\"");
+  EMailText.append(activationLink);
+  EMailText.append("\">");
+  EMailText.append(activationLink);
+  EMailText.append("</a>\r\n");
+  */
 
   std::string EMailText;
   std::string activationLink = BaseCfg.PoolHostProtocol + "://";
