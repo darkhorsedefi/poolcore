@@ -81,7 +81,7 @@ bool UserManager::sendMail(const std::string &login, const std::string &emailAdd
 
   EMailText.append("MIME-Version: 1.0\r\n");
   EMailText.append("Content-Type: text/html; charset=UTF-8\r\n");
-  EMailText.append("From: " + BaseCfg.smtpSenderAddress + "\r\n");
+  EMailText.append("From: " + BaseCfg.SmtpSenderAddress + "\r\n");
   EMailText.append("To: " + emailAddress + "\r\n");
   EMailText.append("Subject: " + emailTitlePrefix + " " + BaseCfg.PoolName + "\r\n");
   EMailText.append("\r\n");
