@@ -56,7 +56,7 @@ bool UserManager::sendMail(const std::string &login, const std::string &emailAdd
     error = "smtp_client_create_error";
     return false;
   }
-  
+  /*
   std::string EMailText;
   std::string activationLink = BaseCfg.PoolHostProtocol + "://";
   activationLink.append(BaseCfg.PoolHostAddress);
@@ -71,27 +71,35 @@ bool UserManager::sendMail(const std::string &login, const std::string &emailAdd
   EMailText.append("\">");
   EMailText.append(activationLink);
   EMailText.append("</a>\r\n");
+  */
 
-  /*
   std::string EMailText;
   std::string activationLink = BaseCfg.PoolHostProtocol + "://";
   activationLink.append(BaseCfg.PoolHostAddress);
   activationLink.append(linkPrefix);
   activationLink.append(actionId.ToString());
 
+  // Email Headers
   EMailText.append("MIME-Version: 1.0\r\n");
   EMailText.append("Content-Type: text/html; charset=UTF-8\r\n");
+  EMailText.append("Content-Transfer-Encoding: 7bit\r\n");  // Ensure proper text handling
   EMailText.append("From: " + BaseCfg.SmtpSenderAddress + "\r\n");
   EMailText.append("To: " + emailAddress + "\r\n");
   EMailText.append("Subject: " + emailTitlePrefix + " " + BaseCfg.PoolName + "\r\n");
-  EMailText.append("\r\n");
 
-  EMailText.append("<html><body>");
-  EMailText.append("<p>This email was generated automatically, please don't reply.</p>");
-  EMailText.append("<p>" + mainText + "</p>");
-  EMailText.append("<p>Visit <a href=\"" + activationLink + "\">" + activationLink + "</a></p>");
-  EMailText.append("</body></html>");
-  */
+  // **IMPORTANT**: Add a double newline to separate headers from body
+  EMailText.append("\r\n\r\n");
+
+  // Email Body with Proper HTML Structure
+  EMailText.append("<!DOCTYPE html>\r\n");
+  EMailText.append("<html><head>\r\n");
+  EMailText.append("<meta charset=\"UTF-8\">\r\n");
+  EMailText.append("<title>Activation Email</title>\r\n");
+  EMailText.append("</head><body>\r\n");
+  EMailText.append("<p>This email was generated automatically, please don't reply.</p>\r\n");
+  EMailText.append("<p>" + mainText + "</p>\r\n");
+  EMailText.append("<p>Visit <a href=\"" + activationLink + "\">" + activationLink + "</a></p>\r\n");
+  EMailText.append("</body></html>\r\n");
 
   int result = ioSmtpSendMail(client,
                               SMTP.ServerAddress,
