@@ -453,6 +453,7 @@ private:
     std::string PoolName;
     std::string PoolHostProtocol;
     std::string PoolHostAddress;
+    std::string SmtpSenderAddress;
     std::string ActivateLinkPrefix;
     std::string ChangePasswordLinkPrefix;
     std::string Activate2faLinkPrefix;
