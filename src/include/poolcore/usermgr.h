@@ -275,7 +275,6 @@ public:
   void setBaseCfg(const std::string &poolName,
                   const std::string &poolHostProtocol,
                   const std::string &poolHostAddress,
-                  const std::string &smtpSenderAddress,
                   const std::string &userActivateLinkPrefix,
                   const std::string &userChangePasswordLinkPrefix,
                   const std::string &userActivate2faPrefix,
@@ -283,7 +282,6 @@ public:
     BaseCfg.PoolName = poolName;
     BaseCfg.PoolHostProtocol = poolHostProtocol;
     BaseCfg.PoolHostAddress = poolHostAddress;
-    BaseCfg.SmtpSenderAddress = smtpSenderAddress;
     BaseCfg.ActivateLinkPrefix = userActivateLinkPrefix;
     BaseCfg.ChangePasswordLinkPrefix = userChangePasswordLinkPrefix;
     BaseCfg.Activate2faLinkPrefix = userActivate2faPrefix;
@@ -453,7 +451,6 @@ private:
     std::string PoolName;
     std::string PoolHostProtocol;
     std::string PoolHostAddress;
-    std::string SmtpSenderAddress;
     std::string ActivateLinkPrefix;
     std::string ChangePasswordLinkPrefix;
     std::string Activate2faLinkPrefix;

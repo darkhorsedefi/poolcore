@@ -83,14 +83,11 @@ bool UserManager::sendMail(const std::string &login, const std::string &emailAdd
   EMailText.append("MIME-Version: 1.0\r\n");
   EMailText.append("Content-Type: text/html; charset=UTF-8\r\n");
   EMailText.append("Content-Transfer-Encoding: 7bit\r\n");  // Ensure proper text handling
-  EMailText.append("From: " + BaseCfg.SmtpSenderAddress + "\r\n");
+  EMailText.append("From: " + SMTP.SenderAddress + "\r\n");
   EMailText.append("To: " + emailAddress + "\r\n");
   EMailText.append("Subject: " + emailTitlePrefix + " " + BaseCfg.PoolName + "\r\n");
+  EMailText.append("\r\n");
 
-  // **IMPORTANT**: Add a double newline to separate headers from body
-  EMailText.append("\r\n\r\n");
-
-  // Email Body with Proper HTML Structure
   EMailText.append("<!DOCTYPE html>\r\n");
   EMailText.append("<html><head>\r\n");
   EMailText.append("<meta charset=\"UTF-8\">\r\n");
