@@ -718,7 +718,6 @@ void UserManager::userCreateImpl(const std::string &login, Credentials &credenti
         return;
       }
 
-      /*
       std::string EMailText;
       std::string activationLink = BaseCfg.PoolHostProtocol + "://";
         activationLink.append(BaseCfg.PoolHostAddress);
@@ -732,26 +731,6 @@ void UserManager::userCreateImpl(const std::string &login, Credentials &credenti
       EMailText.append("\">");
       EMailText.append(activationLink);
       EMailText.append("</a>\r\n");
-      */
-
-      std::string EMailText;
-      std::string activationLink = BaseCfg.PoolHostProtocol + "://";
-      activationLink.append(BaseCfg.PoolHostAddress);
-      activationLink.append(linkPrefix);
-      activationLink.append(actionId.ToString());
-
-      EMailText.append("MIME-Version: 1.0\r\n");
-      EMailText.append("Content-Type: text/html; charset=UTF-8\r\n");
-      EMailText.append("From: " + BaseCfg.SmtpSenderAddress + "\r\n");
-      EMailText.append("To: " + emailAddress + "\r\n");
-      EMailText.append("Subject: " + emailTitlePrefix + " " + BaseCfg.PoolName + "\r\n");
-      EMailText.append("\r\n");
-
-      EMailText.append("<html><body>");
-      EMailText.append("<p>This email was generated automatically, please don't reply.</p>");
-      EMailText.append("<p>" + mainText + "</p>");
-      EMailText.append("<p>Visit <a href=\"" + activationLink + "\">" + activationLink + "</a></p>");
-      EMailText.append("</body></html>");
 
       int result = ioSmtpSendMail(client,
                                   SMTP.ServerAddress,
