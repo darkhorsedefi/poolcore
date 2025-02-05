@@ -63,7 +63,7 @@ bool UserManager::sendMail(const std::string &login, const std::string &emailAdd
   activationLink.append(linkPrefix);
   activationLink.append(actionId.ToString());
 
-  EMailText.append("Content-Type: text/html; charset=\"UTF-8\";\r\n");
+  EMailText.append("Content-Type: text/html; charset=\"ISO-8859-1\";\r\n");
   EMailText.append("This email generated automatically, please don't reply.\r\n");
   EMailText.append(mainText);
   EMailText.append(" visit <a href=\"");
