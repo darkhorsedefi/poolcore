@@ -307,7 +307,7 @@ public:
     int64_t blockRewardDelta = 0;
     bool txFilter = this->MiningCfg_.TxNumLimit && transactions.Size() > this->MiningCfg_.TxNumLimit;
     std::vector<TxData> processedTransactions;
-    bool needSortByHash = (ticker == "BCHN" || ticker == "BCHABC" || ticker = "XEC");
+    bool needSortByHash = (ticker == "BCHN" || ticker == "BCHABC" || ticker == "XEC");
 
     bool transactionCheckResult;
     if (txFilter)
