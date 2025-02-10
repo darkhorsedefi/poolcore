@@ -626,34 +626,68 @@ std::string BTC::Proto::makeHumanReadableAddress(uint8_t pubkeyAddressPrefix, co
   return EncodeBase58(data, data+sizeof(data));
 }
 
-bool BTC::Proto::decodeHumanReadableAddress(const std::string &hrAddress, const std::vector<uint8_t> &prefix, BTC::Proto::AddressTy &address)
+bool BTC::Proto::decodeHumanReadableAddress(const std::string &hrAddress,
+                                              const std::vector<uint8_t> &prefix,
+                                              BTC::Proto::AddressTy &address)
 {
-  std::vector<uint8_t> data;
-  if (!DecodeBase58(hrAddress.c_str(), data) ||
-      data.size() != (prefix.size() + sizeof(BTC::Proto::AddressTy) + 4))
-    return false;
+    // Check if the address looks like a CashAddr address (by detecting a colon)
+    if (hrAddress.find(':') != std::string::npos)
+    {
+        // Convert the expected prefix (which was provided as a vector) to a string.
+        // For CashAddr addresses, this should be something like "ecash".
+        std::string expectedPrefix(prefix.begin(), prefix.end());
 
-  if (memcmp(&data[0], &prefix[0], prefix.size()) != 0)
-    return false;
+        // Decode using the CashAddr decoding routine.
+        auto cashContent = bech32::DecodeCashAddrContent(hrAddress, expectedPrefix);
+        if (cashContent.data.empty())
+        {
+            // Decoding failed
+            return false;
+        }
 
-  uint32_t addrHash;
-  memcpy(&addrHash, &data[prefix.size() + 20], 4);
+        // Ensure the decoded hash size matches what we expect.
+        if (cashContent.data.size() != sizeof(BTC::Proto::AddressTy))
+            return false;
 
-  uint8_t sha256[32];
-  SHA256_CTX ctx;
-  SHA256_Init(&ctx);
-  SHA256_Update(&ctx, &data[0], data.size() - 4);
-  SHA256_Final(sha256, &ctx);
+        // Copy the hash bytes into the address.
+        memcpy(address.begin(), cashContent.data.data(), sizeof(BTC::Proto::AddressTy));
+        return true;
+    }
+    else
+    {
+        // Legacy Base58Check decoding path.
+        std::vector<uint8_t> data;
+        if (!DecodeBase58(hrAddress.c_str(), data) ||
+            data.size() != (prefix.size() + sizeof(BTC::Proto::AddressTy) + 4))
+            return false;
 
-  SHA256_Init(&ctx);
-  SHA256_Update(&ctx, sha256, sizeof(sha256));
-  SHA256_Final(sha256, &ctx);
+        // Verify that the decoded prefix matches what is expected.
+        if (memcmp(&data[0], &prefix[0], prefix.size()) != 0)
+            return false;
 
-  if (reinterpret_cast<uint32_t*>(sha256)[0] != addrHash)
-    return false;
+        // Extract the checksum (last 4 bytes) from the data.
+        uint32_t addrHash;
+        memcpy(&addrHash, &data[prefix.size() + sizeof(BTC::Proto::AddressTy)], 4);
 
-  memcpy(address.begin(), &data[prefix.size()], sizeof(BTC::Proto::AddressTy));
-  return true;
+        // Compute the double SHA-256 checksum of the data (excluding the checksum itself).
+        uint8_t sha256[32];
+        SHA256_CTX ctx;
+        SHA256_Init(&ctx);
+        SHA256_Update(&ctx, &data[0], data.size() - 4);
+        SHA256_Final(sha256, &ctx);
+
+        SHA256_Init(&ctx);
+        SHA256_Update(&ctx, sha256, sizeof(sha256));
+        SHA256_Final(sha256, &ctx);
+
+        // Compare the computed checksum with the one from the address.
+        if (reinterpret_cast<uint32_t*>(sha256)[0] != addrHash)
+            return false;
+
+        // Copy the payload (address hash) into the address.
+        memcpy(address.begin(), &data[prefix.size()], sizeof(BTC::Proto::AddressTy));
+        return true;
+    }
 }
 
 bool BTC::Proto::decodeWIF(const std::string &privateKey, const std::vector<uint8_t> &prefix, uint8_t *result)
