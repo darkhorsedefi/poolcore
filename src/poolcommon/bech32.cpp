@@ -8,7 +8,6 @@
 #include <string>
 #include <tuple>
 #include <vector>
-#include <iostream>
  
 namespace
 {
@@ -459,17 +458,11 @@ CashAddrContent DecodeCashAddrContent(const std::string &addr,
     std::vector<uint8_t> payload;
     std::tie(prefix, payload) = DecodeCashAddr(addr, expectedPrefix);
 
-    std::cout << "DEBUG: Decoded prefix: " << prefix << std::endl;
-    std::cout << "DEBUG: Expected prefix: " << expectedPrefix << std::endl;
-    std::cout << "DEBUG: Payload size: " << payload.size() << std::endl;
-
     if (prefix != expectedPrefix) {
-        std::cout << "DEBUG: Prefix check failed." << std::endl;
         return {};
     }
 
     if (payload.empty()) {
-        std::cout << "DEBUG: Payload is empty." << std::endl;
         return {};
     }
 
@@ -477,15 +470,13 @@ CashAddrContent DecodeCashAddrContent(const std::string &addr,
     data.reserve(payload.size() * 5 / 8);
     if (!ConvertBits<5, 8, false>([&](uint8_t c) { data.push_back(c); },
                                   begin(payload), end(payload))) {
-        std::cout << "DEBUG: ConvertBits failed." << std::endl;
         return {};
     }
 
-    std::cout << "DEBUG: Data size after conversion: " << data.size() << std::endl;
-
+    // Decode type and size from the version.
     uint8_t version = data[0];
     if (version & 0x80) {
-        std::cout << "DEBUG: Invalid version (reserved bit set)." << std::endl;
+        // First bit is reserved.
         return {};
     }
 
@@ -495,14 +486,12 @@ CashAddrContent DecodeCashAddrContent(const std::string &addr,
         hash_size *= 2;
     }
 
-    std::cout << "DEBUG: Expected data size (hash_size + 1): " << (hash_size + 1)
-              << " | Actual data size: " << data.size() << std::endl;
-
+    // Check that we decoded the exact number of bytes we expected.
     if (data.size() != hash_size + 1) {
-        std::cout << "DEBUG: Data size check failed." << std::endl;
         return {};
     }
 
+    // Pop the version.
     data.erase(data.begin());
     return {type, std::move(data)};
 }
