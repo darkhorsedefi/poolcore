@@ -639,18 +639,18 @@ bool BTC::Proto::decodeHumanReadableAddress(const std::string &hrAddress,
 
         // Decode using the CashAddr decoding routine.
         auto cashContent = bech32::DecodeCashAddrContent(hrAddress, expectedPrefix);
-        if (cashContent.data.empty())
+        if (cashContent.hash.empty())
         {
-            // Decoding failed
+            // Decoding failed.
             return false;
         }
 
         // Ensure the decoded hash size matches what we expect.
-        if (cashContent.data.size() != sizeof(BTC::Proto::AddressTy))
+        if (cashContent.hash.size() != sizeof(BTC::Proto::AddressTy))
             return false;
 
         // Copy the hash bytes into the address.
-        memcpy(address.begin(), cashContent.data.data(), sizeof(BTC::Proto::AddressTy));
+        memcpy(address.begin(), cashContent.hash.data(), sizeof(BTC::Proto::AddressTy));
         return true;
     }
     else
