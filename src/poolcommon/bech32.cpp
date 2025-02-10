@@ -458,7 +458,7 @@ CashAddrContent DecodeCashAddrContent(const std::string &addr,
     std::vector<uint8_t> payload;
     std::tie(prefix, payload) = DecodeCashAddr(addr, expectedPrefix);
 
-    if (prefix != expectedPrefix) {
+    if (prefix != expectedPrefix && prefix != "ecash" && prefix != "bitcoincash") {
         return {};
     }
 
