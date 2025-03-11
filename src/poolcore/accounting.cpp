@@ -452,6 +452,7 @@ void AccountingDb::addShare(const CShare &share)
   LastKnownShareId_ = share.UniqueShareId;
 
   if (share.isBlock) {
+    LastBlockTime_ = time(nullptr);
     double accumulatedWork = 0.0;
     for (const auto &score: CurrentScores_)
       accumulatedWork += score.second;
@@ -1231,3 +1232,53 @@ void AccountingDb::queryBalanceImpl(const std::string &user, QueryBalanceCallbac
 
   callback(info);
 }
+
+// In accounting.cpp, add the following member function implementations for AccountingDb:
+
+double AccountingDb::getTotalWorkDone() {
+  double total = 0.0;
+  std::unique_ptr<rocksdbBase::IteratorType> it(_foundBlocksDb.iterator());
+  for (it->seekFirst(); it->valid(); it->next()) {
+    FoundBlockRecord blk;
+    RawData data = it->value();
+    if (blk.deserializeValue(data.data, data.size))
+      total += blk.AccumulatedWork;
+  }
+  return total;
+}
+
+int AccountingDb::getTotalBlocksFound() {
+  int count = 0;
+  std::unique_ptr<rocksdbBase::IteratorType> it(_foundBlocksDb.iterator());
+  for (it->seekFirst(); it->valid(); it->next()) {
+    FoundBlockRecord blk;
+    RawData data = it->value();
+    if (blk.deserializeValue(data.data, data.size))
+      count++;
+  }
+  return count;
+}
+
+double AccountingDb::getTotalPaidOut() {
+  double total = 0.0;
+  std::unique_ptr<rocksdbBase::IteratorType> it(_payoutDb.iterator());
+  for (it->seekFirst(); it->valid(); it->next()) {
+    PayoutDbRecord rec;
+    RawData data = it->value();
+    if (rec.deserializeValue(data.data, data.size))
+      total += rec.Value;
+  }
+  return total;
+}
+
+double AccountingDb::getExpectedBlockTime() {
+  // For now, return a fixed expected block time (e.g., 600 seconds).
+  return 600.0;
+}
+
+int AccountingDb::getTimeSinceLastBlock() {
+  // Ensure that LastBlockTime_ is updated when a block is found.
+  // Then, compute the time elapsed since the last block.
+  return static_cast<int>(time(nullptr) - LastBlockTime_);
+}
+

@@ -204,3 +204,26 @@ void PoolBackend::queryPayouts(const std::string &user, uint64_t timeFrom, unsig
     It->prev<PayoutDbRecord>(resumeKey.data<const char>(), resumeKey.sizeOf(), valueRecord, validPredicate);
   }
 }
+
+// Define the NetworkStats structure (if not already defined)
+struct NetworkStats {
+  double networkHashRate;
+  double expectedTimePerBlock;
+  int currentBlockHeight;
+  double currentDifficulty;
+  double nextDifficultyEstimate;
+  int timeToRetarget;
+};
+
+// In backend.cpp, add to the PoolBackend class implementation:
+bool PoolBackend::getNetworkStats(NetworkStats &stats) {
+// For demonstration, return fixed values.
+// Later you can replace these with actual RPC calls or calculations.
+stats.networkHashRate = 234567.89;
+stats.expectedTimePerBlock = 600.0;
+stats.currentBlockHeight = 654321;
+stats.currentDifficulty = 1234567.0;
+stats.nextDifficultyEstimate = 1300000.0;
+stats.timeToRetarget = 1200;
+return true;
+}
